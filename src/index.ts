@@ -12,64 +12,71 @@ export const providePolkadotApi = async (url: string) => {
 };
 
 async function createPolkadotApi(network: string) {
-  const apiPromise = await providePolkadotApi(
-    network
-  );
+  const apiPromise = await providePolkadotApi(network);
   await apiPromise.isReady;
   return apiPromise;
 };
 
-// ~ VALUES ~
+// ~ STORAGE VALUES ~
 
 async function logSelectedCandidates(api: ApiPromise) {
   const selected =
     await api.query.parachainStaking.selectedCandidates();
+  console.log("SELECTED CANDIDATES:");
   console.log(selected.toJSON());
 };
 
 async function logCandidatePool(api: ApiPromise) {
     const pool =
         await api.query.parachainStaking.candidatePool();
+    console.log("CANDIDATE POOL:");
     // TODO: convert amount from hex to balance
     console.log(pool.toJSON());
 };
 
 async function logExitQueue(api: ApiPromise) {
     const exitQ = await api.query.parachainStaking.exitQueue2();
+    console.log("PENDING EXITS:");
     console.log(exitQ.toJSON());
 }
 
 async function logRoundInfo(api: ApiPromise) {
     const round = await api.query.parachainStaking.round();
+    console.log("ROUND INFO:");
     console.log(round.toJSON());
 }
 
 async function logInflationConfig(api: ApiPromise) {
     const config = await api.query.parachainStaking.inflationConfig();
+    console.log("INFLATION CONFIGURATION:");
     // TODO: convert amount from hex to balance
     console.log(config.toJSON());
 }
 
 async function logParachainBondInfo(api: ApiPromise) {
     const parachainBondInfo = await api.query.parachainStaking.parachainBondInfo();
+    console.log("PARACHAIN BOND CONFIGURATION:");
     // TODO: convert amount from hex to balance
     console.log(parachainBondInfo.toJSON());
 }
 
 async function logTotalLocked(api: ApiPromise) {
     const totalLocked = await api.query.parachainStaking.total();
+    console.log("TOTAL LOCKED:");
     // TODO: convert amount from hex to balance
     console.log(totalLocked.toJSON());
 }
 
 async function logCollatorCommission(api: ApiPromise) {
     const commission = await api.query.parachainStaking.collatorCommission();
+    console.log("COLLATOR COMMISSION:");
     // TODO: convert amount from perbill to percent
     console.log(commission.toJSON());
 }
 
 async function logTotalSelected(api: ApiPromise) {
     const totalSelected = await api.query.parachainStaking.totalSelected();
+    console.log("TOTAL SELECTED ELIGIBLE AUTHORS PER ROUND:");
     console.log(totalSelected.toJSON());
 }
 
@@ -83,23 +90,14 @@ async function logTotalSelected(api: ApiPromise) {
 async function main() {
     console.log("QUERYING " + moonRiverWss + " INFO");
     const moonriverApi = await createPolkadotApi(moonRiverWss);
-    console.log("SELECTED CANDIDATES:");
     await logSelectedCandidates(moonriverApi);
-    console.log("CANDIDATE POOL:");
     await logCandidatePool(moonriverApi);
-    console.log("ROUND INFO:");
     await logRoundInfo(moonriverApi);
-    console.log("INFLATION CONFIGURATION:");
     await logInflationConfig(moonriverApi);
-    console.log("PARACHAIN BOND CONFIGURATION:");
     await logParachainBondInfo(moonriverApi);
-    console.log("PENDING EXITS:");
     await logExitQueue(moonriverApi);
-    console.log("TOTAL LOCKED:");
     await logTotalLocked(moonriverApi);
-    console.log("COLLATOR COMMISSION CONFIGURATION:");
     await logCollatorCommission(moonriverApi);
-    console.log("TOTAL SELECTED ELIGIBLE AUTHORS PER ROUND:");
     await logTotalSelected(moonriverApi);
     moonriverApi.disconnect();
     console.log("DISCONNECTED FROM " + moonRiverWss);
