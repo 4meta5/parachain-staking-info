@@ -2,9 +2,6 @@
 	"editor.codeActionsOnSave": {
 		"source.fixAll.eslint": true
 	},
-	"eslint.validate": [
-		"javascript", "typescript",
-	],
 	"workbench.colorCustomizations": {
 		"activityBar.activeBackground": "#54d97d",
 		"activityBar.activeBorder": "#8863dc",
@@ -20,6 +17,5 @@
 		"titleBar.activeForeground": "#15202b",
 		"titleBar.inactiveBackground": "#2dcd5f99",
 		"titleBar.inactiveForeground": "#15202b99"
-	},
-	"peacock.color": "#2dcd5f"
+	}
 }
