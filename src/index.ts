@@ -19,14 +19,29 @@ async function createPolkadotApi(network: string) {
 
 // ~ STORAGE VALUES ~
 
-async function logSelectedCandidates(api: ApiPromise) {
+async function printSelectedCandidates(api: ApiPromise) {
   const selected =
     await api.query.parachainStaking.selectedCandidates();
   console.log("SELECTED CANDIDATES:");
   console.log(selected.toJSON());
 };
 
-async function logCandidatePool(api: ApiPromise) {
+async function getSelectedCandidates(api: ApiPromise) {
+  const selected =
+    await api.query.parachainStaking.selectedCandidates();
+  selected.toJSON()
+};
+
+async function printStateForSelectedCandidates(api: ApiPromise) {
+  const selected = await getSelectedCandidates(api);
+  console.log("STATE FOR SELECTED CANDIDATES:");
+  // TODO: why is this not working???
+  for (var collator in selected as any) {
+    collatorState(api, collator)
+  }
+}
+
+async function candidatePool(api: ApiPromise) {
     const pool =
         await api.query.parachainStaking.candidatePool();
     console.log("CANDIDATE POOL:");
@@ -34,71 +49,86 @@ async function logCandidatePool(api: ApiPromise) {
     console.log(pool.toJSON());
 };
 
-async function logExitQueue(api: ApiPromise) {
+async function exitQueue(api: ApiPromise) {
     const exitQ = await api.query.parachainStaking.exitQueue2();
     console.log("PENDING EXITS:");
     console.log(exitQ.toJSON());
 }
 
-async function logRoundInfo(api: ApiPromise) {
+async function roundInfo(api: ApiPromise) {
     const round = await api.query.parachainStaking.round();
     console.log("ROUND INFO:");
     console.log(round.toJSON());
 }
 
-async function logInflationConfig(api: ApiPromise) {
+async function inflationConfig(api: ApiPromise) {
     const config = await api.query.parachainStaking.inflationConfig();
     console.log("INFLATION CONFIGURATION:");
     // TODO: convert amount from hex to balance
     console.log(config.toJSON());
 }
 
-async function logParachainBondInfo(api: ApiPromise) {
+async function parachainBondInfo(api: ApiPromise) {
     const parachainBondInfo = await api.query.parachainStaking.parachainBondInfo();
     console.log("PARACHAIN BOND CONFIGURATION:");
     // TODO: convert amount from hex to balance
     console.log(parachainBondInfo.toJSON());
 }
 
-async function logTotalLocked(api: ApiPromise) {
+async function totalLocked(api: ApiPromise) {
     const totalLocked = await api.query.parachainStaking.total();
     console.log("TOTAL LOCKED:");
     // TODO: convert amount from hex to balance
     console.log(totalLocked.toJSON());
 }
 
-async function logCollatorCommission(api: ApiPromise) {
+async function collatorCommission(api: ApiPromise) {
     const commission = await api.query.parachainStaking.collatorCommission();
     console.log("COLLATOR COMMISSION:");
     // TODO: convert amount from perbill to percent
     console.log(commission.toJSON());
 }
 
-async function logTotalSelected(api: ApiPromise) {
+async function totalSelected(api: ApiPromise) {
     const totalSelected = await api.query.parachainStaking.totalSelected();
     console.log("TOTAL SELECTED ELIGIBLE AUTHORS PER ROUND:");
     console.log(totalSelected.toJSON());
 }
 
-// TODO: ALL STORAGE MAPS
-// all top nominations for a given collator
-// log all bottom nominations for a given collator
-// log all nominations for a given nominator
-// log all nominators
+// ~ STORAGE MAPS ~
 
-// TODO: move console.log into each function
+async function collatorState(api: ApiPromise, collator: string) {
+  const state = await api.query.parachainStaking.collatorState2(collator);
+  console.log("COLLATOR STATE FOR " + collator + " :");
+  console.log(state.toJSON());
+}
+
+async function nominatorState(api: ApiPromise, nominator: string) {
+  const state = await api.query.parachainStaking.nominatorState2(nominator);
+  console.log("NOMINATOR STATE FOR " + nominator + " :");
+  console.log(state.toJSON());
+}
+
+// TODO: ALL STORAGE MAPS
+// - for all accounts in selected candidates, log collatorState in json
+// - all top nominations for a given collator
+// - log all bottom nominations for a given collator
+// - log all nominations for a given nominator
+// - log all nominators
+
 async function main() {
     console.log("QUERYING " + moonRiverWss + " INFO");
     const moonriverApi = await createPolkadotApi(moonRiverWss);
-    await logSelectedCandidates(moonriverApi);
-    await logCandidatePool(moonriverApi);
-    await logRoundInfo(moonriverApi);
-    await logInflationConfig(moonriverApi);
-    await logParachainBondInfo(moonriverApi);
-    await logExitQueue(moonriverApi);
-    await logTotalLocked(moonriverApi);
-    await logCollatorCommission(moonriverApi);
-    await logTotalSelected(moonriverApi);
+    await printSelectedCandidates(moonriverApi);
+    await printStateForSelectedCandidates(moonriverApi);
+    // await candidatePool(moonriverApi);
+    // await roundInfo(moonriverApi);
+    // await inflationConfig(moonriverApi);
+    // await parachainBondInfo(moonriverApi);
+    // await exitQueue(moonriverApi);
+    // await totalLocked(moonriverApi);
+    // await collatorCommission(moonriverApi);
+    // await totalSelected(moonriverApi);
     moonriverApi.disconnect();
     console.log("DISCONNECTED FROM " + moonRiverWss);
 }
