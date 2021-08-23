@@ -35,9 +35,9 @@ async function getSelectedCandidates(api: ApiPromise) {
 async function printStateForSelectedCandidates(api: ApiPromise) {
   const selected = await getSelectedCandidates(api);
   console.log("STATE FOR SELECTED CANDIDATES:");
-  // TODO: why is this not working???
   for (var collator in selected as any) {
-    collatorState(api, collator)
+    console.log("WE NEVER ENTER");
+    await collatorState(api, collator);
   }
 }
 
